@@ -17,6 +17,35 @@ The site presents services, example projects, technologies, clients, team member
 - Contact form layout
 - Responsive desktop and mobile design
 
+## Screenshots
+
+<p align="center">
+  <a href="docs/screenshots/home.webp">
+    <img src="docs/screenshots/home.webp" width="760" alt="NetBridge Solutions landing page hero section">
+  </a>
+  <br>
+  <strong>Home</strong>
+</p>
+
+<table>
+  <tr>
+    <td align="center"><strong>Services &amp; Projects</strong></td>
+    <td align="center"><strong>Team &amp; Contact</strong></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="docs/screenshots/services-projects.webp">
+        <img src="docs/screenshots/services-projects.webp" width="380" alt="Services, featured projects and technology sections">
+      </a>
+    </td>
+    <td align="center">
+      <a href="docs/screenshots/team-contact.webp">
+        <img src="docs/screenshots/team-contact.webp" width="380" alt="Team members and contact form sections">
+      </a>
+    </td>
+  </tr>
+</table>
+
 ## Tech Stack
 
 - HTML5
