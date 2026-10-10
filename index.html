@@ -32,13 +32,103 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <style>
     html { scroll-behavior: smooth; }
+    .nb-nav-inner { position: relative; gap: 1rem; }
+    .nb-nav-brand { min-width: 0; white-space: nowrap; }
+    .nb-nav-items {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .nb-nav-items a { display: block; text-decoration: none; }
+    .nb-menu-trigger {
+      display: none;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 10px;
+      color: white;
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+    }
+    .nb-menu-trigger .nb-icon-close { display: none; }
+    .nb-menu-trigger.is-open .nb-icon-open { display: none; }
+    .nb-menu-trigger.is-open .nb-icon-close { display: block; }
+    .nb-menu-trigger:focus-visible, .nb-nav-items a:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 1100px) {
+      .nb-menu-trigger { display: flex; }
+      .nb-brand-label { font-size: clamp(1rem, 3.3vw, 1.5rem); }
+      .nb-nav-items {
+        display: none;
+        position: absolute;
+        top: calc(100% - 2px);
+        left: 16px;
+        right: 16px;
+        z-index: 60;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 8px;
+        max-height: calc(100vh - 88px);
+        overflow-y: auto;
+        background: #1E3A8A;
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 12px;
+        box-shadow: 0 12px 28px rgba(0,0,0,.22);
+      }
+      .nb-nav-items.is-open { display: flex; }
+      .nb-nav-items a { padding: 12px 14px; border-radius: 8px; }
+      .nb-nav-items a:hover, .nb-nav-items a:focus-visible {
+        background: rgba(255,255,255,.12);
+      }
+    }
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      AOS.init({ duration: 800, once: true });
-      new SmoothScroll('nav a[href*="#"]', { speed: 600, offset: 80 });
-      document.getElementById('menu-btn').addEventListener('click', () => {
-        document.getElementById('menu').classList.toggle('hidden');
+      if (window.AOS && typeof window.AOS.init === 'function') {
+        window.AOS.init({ duration: 800, once: true });
+      }
+      if (typeof window.SmoothScroll === 'function') {
+        new window.SmoothScroll('nav a[href*="#"]', { speed: 600, offset: 80 });
+      }
+
+      const menuButton = document.getElementById('menu-btn');
+      const menu = document.getElementById('menu');
+
+      function closeMenu() {
+        menu.classList.remove('is-open');
+        menuButton.classList.remove('is-open');
+        menuButton.setAttribute('aria-expanded', 'false');
+        menuButton.setAttribute('aria-label', 'Abrir menú');
+      }
+
+      menuButton.addEventListener('click', () => {
+        const open = !menu.classList.contains('is-open');
+        menu.classList.toggle('is-open', open);
+        menuButton.classList.toggle('is-open', open);
+        menuButton.setAttribute('aria-expanded', String(open));
+        menuButton.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      });
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeMenu();
+      });
+      document.addEventListener('click', event => {
+        if (!menuButton.contains(event.target) && !menu.contains(event.target)) closeMenu();
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 1100) closeMenu();
       });
     });
   </script>
@@ -48,13 +138,20 @@
     <i class="fas fa-chevron-up"></i>
   </button>
   <nav class="fixed top-0 w-full z-50 bg-primary bg-opacity-70 backdrop-blur-md transition-all">
-    <div class="max-w-7xl mx-auto flex items-center justify-between p-4 md:p-6">
-      <a href="#inicio" class="flex items-center text-white text-2xl font-extrabold tracking-tight">
-  <img src="logo.png" alt="Logo NetBridge" class="h-8 w-auto mr-2">
-  <span>NetBridge Solutions</span>
-</a>
-      <button id="menu-btn" class="md:hidden text-white focus:outline-none"><i class="fas fa-bars fa-2x"></i></button>
-      <ul id="menu" class="hidden md:flex space-x-8 text-white font-medium">
+    <div class="max-w-7xl mx-auto flex items-center justify-between p-4 md:p-6 nb-nav-inner">
+      <a href="#inicio" class="flex items-center text-white text-2xl font-extrabold tracking-tight nb-nav-brand">
+        <img src="logo.png" alt="Logo NetBridge" class="h-8 w-auto mr-2">
+        <span class="nb-brand-label">NetBridge Solutions</span>
+      </a>
+      <button id="menu-btn" type="button" class="nb-menu-trigger" aria-controls="menu" aria-expanded="false" aria-label="Abrir menú">
+        <svg class="nb-icon-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg class="nb-icon-close" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+      <ul id="menu" class="nb-nav-items text-white font-medium">
         <li><a href="#inicio" class="hover:text-secondary">Inicio</a></li>
         <li><a href="#servicios" class="hover:text-secondary">Servicios</a></li>
         <li><a href="#proyectos" class="hover:text-secondary">Proyectos</a></li>
